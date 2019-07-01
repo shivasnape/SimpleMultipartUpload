@@ -80,11 +80,18 @@ public class MainActivity extends AppCompatActivity {
                         File file = new File(filePath);
                         Log.e("FilePath -->", filePath);
                         Log.e("FilePath -->", file.getAbsolutePath());
+
+
+                        /*Getting file name from file path*/
+                        Log.e("File Name ->",file.getName());
+
+
+
                         imageView.setImageURI(selectedImage);
 
 
                         //upload Image
-                        uploadImageUsingRetrofit(file);
+                        uploadImageUsingRetrofit(file,file.getName());
 
                         //uplaod video
                         //  uploadVideoUsingRetrofit(file);
@@ -138,7 +145,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private void uploadImageUsingRetrofit(File imageFile) {
+    private void uploadImageUsingRetrofit(File imageFile, String filename) {
 
         progressDialog.setMessage("Uploading Image.....");
         progressDialog.setCancelable(false);
@@ -149,7 +156,10 @@ public class MainActivity extends AppCompatActivity {
 
         /*create image request here*/
         reqFile = RequestBody.create(MediaType.parse("image/*"), imageFile);
-        response = networkTask.uploadImageToServer("fileUpload", reqFile);
+        // Create MultipartBody.Part using file request-body,file name and part name
+        MultipartBody.Part part = MultipartBody.Part.createFormData("upload", filename, reqFile);
+
+        response = networkTask.uploadImageToServer("fileUpload", part);
 
         response.enqueue(new Callback<String>() {
             @Override
